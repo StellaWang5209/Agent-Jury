@@ -7,7 +7,7 @@
 [![Monad Testnet](https://img.shields.io/badge/CONTRACT-0x2986...eA9-836EF1)](https://testnet.monadscan.com/address/0x2986c8094771162F39AD991d6dc87490149BfeA9)
 [![GitHub](https://img.shields.io/badge/README-%E5%AE%8C%E6%95%B4%E8%B7%AF%E6%BC%94-24292F)](#)
 
-> 🎬 **2 分 09 秒演示视频**：[`docs/AgentJury-Demo.mp4`](docs/AgentJury-Demo.mp4) —— 片头导览 → 独立演示台（危险案例盲审全流程）→ 集成演示（Kuru Exchange 风控回调拦截交易）→ 收尾。在线演示： <https://128840e2f4b341a58f39bff9bb57b6d4.app.workbuddy.link>
+> 在线演示： <https://128840e2f4b341a58f39bff9bb57b6d4.app.workbuddy.link>
 
 ---
 
