@@ -1,3 +1,5 @@
+import Logo from "./Logo";
+
 interface NavbarProps {
   walletAddress: string | null;
   balance: string | null;
@@ -24,18 +26,13 @@ export default function Navbar({
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         {/* 左侧：标题 */}
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-gold-600 bg-panel text-gold-400">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z" />
-              <path d="M9 12l2 2 4-4" />
-            </svg>
-          </div>
+          <Logo size={40} />
           <div>
             <h1 className="text-lg font-bold tracking-[0.18em] text-gold-300">
               AGENT JURY
             </h1>
             <p className="text-[11px] tracking-wider text-neutral-500">
-              Blind Consensus for AI Agents
+              AI Agent 盲审共识中间件
             </p>
           </div>
         </div>
@@ -51,7 +48,7 @@ export default function Navbar({
                 }`}
               />
               <span className={chainOk ? "text-neutral-400" : "text-red-400"}>
-                {chainOk ? "Monad Testnet" : "WRONG NETWORK"}
+                {chainOk ? "Monad 测试网" : "网络不正确"}
               </span>
             </div>
           )}
@@ -61,7 +58,7 @@ export default function Navbar({
               className="rounded-lg border border-red-500/50 px-4 py-2 font-semibold text-red-300 transition hover:bg-red-500/10"
               onClick={onSwitchNetwork}
             >
-              SWITCH TO MONAD
+              切换到 Monad 测试网
             </button>
           )}
 
@@ -85,7 +82,7 @@ export default function Navbar({
               onClick={onConnect}
               disabled={connecting}
             >
-              {connecting ? "CONNECTING..." : "CONNECT WALLET"}
+              {connecting ? "连接中…" : "连接钱包"}
             </button>
           )}
         </div>

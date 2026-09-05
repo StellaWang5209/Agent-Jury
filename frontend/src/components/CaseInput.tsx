@@ -17,7 +17,7 @@ export default function CaseInput({
     <section className="panel panel-glow p-6">
       <div className="mb-4 flex items-center gap-3">
         <span className="text-[11px] font-semibold tracking-[0.25em] text-gold-500">
-          01 / CASE INPUT
+          01 / 案件输入
         </span>
         <div className="h-px flex-1 bg-panel-edge" />
       </div>
@@ -40,7 +40,7 @@ export default function CaseInput({
           }
           disabled={juryRunning}
         >
-          ⚠ Dangerous Case
+          ⚠ 危险案例
         </button>
         <button
           className="btn-outline-gold px-3 py-1.5 text-xs"
@@ -51,7 +51,7 @@ export default function CaseInput({
           }
           disabled={juryRunning}
         >
-          ✓ Safe Case
+          ✓ 安全案例
         </button>
       </div>
 
@@ -70,14 +70,14 @@ export default function CaseInput({
             ? "盲审进行中，请勿关闭页面…"
             : revealed
               ? "裁决已完成，输入新问题可重新开始"
-              : "Start 后进入 Commit 阶段：只公布承诺哈希，不公布观点"}
+              : "开始后进入密封阶段：只公布承诺哈希，不公布观点"}
         </span>
         <button
           className="btn-gold px-8 py-3 text-sm"
           onClick={onStartJury}
           disabled={juryRunning || question.trim().length === 0}
         >
-          {juryRunning ? "JURY RUNNING..." : "⚖ START JURY"}
+          {juryRunning ? "盲审进行中…" : "⚖ 开始盲审"}
         </button>
       </div>
     </section>

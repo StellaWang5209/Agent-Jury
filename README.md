@@ -39,6 +39,15 @@
 - **在线演示**：<https://128840e2f4b341a58f39bff9bb57b6d4.app.workbuddy.link>
 - 未连接钱包也可完整体验盲审流程；连接 MetaMask/OKX/Rabby（EIP-6963 多钱包发现）后可将裁决锚定上链
 
+## 集成演示 · Kuru Exchange
+
+演示站新增 **「集成演示 · Kuru Exchange」** 标签页：以 Monad 生态旗舰 DEX **Kuru Exchange** 为宿主，展示 Agent Jury 作为信任中间件的真实集成形态——
+
+- **场景**：Kuru 交易 Agent 计划对未经验证的路由合约执行 Unlimited Approve 并以 500 USDC 买入 MON，交易签名前调用 `AgentJury.requestAudit()` 发起风控审批
+- **跨网架构**：Kuru 部署于 Monad 主网，Agent Jury 部署于 Monad 测试网——中间件以「案件哈希 + 承诺哈希」锚定裁决，宿主只接收最终裁决回调，跨网不影响集成链路（集成数据为模拟数据）
+- **5 步集成管线**：发起风控审批 → 构建案件 → 4 名陪审员独立盲审 → 揭晓与共识计算 → 裁决回调宿主（ALLOW 放行 / BLOCK 拦截 / REVIEW 转人工）
+- **中间件全流程可见**：为展示中间件本身，推理日志、承诺哈希、揭晓校验、共识计算、上链锚定全部在页面上完整呈现；生产集成时宿主可选择只暴露 API
+
 ## 为什么必须构建在 Monad 上
 
 Agent 决策是机器速度：高频、小额、要求实时上链存证。

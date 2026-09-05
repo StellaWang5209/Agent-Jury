@@ -11,6 +11,7 @@ import {
   hasActiveKey,
 } from "./jury/llmProvider";
 import AiSettings from "./components/AiSettings";
+import IntegrationDemo, { KURU_SCENARIO } from "./components/IntegrationDemo";
 import {
   checkChain,
   connectWallet,
@@ -62,6 +63,9 @@ export default function App() {
   const [caseHash, setCaseHash] = useState<string | null>(null);
   // 演示模式：未连接钱包也能完整体验盲审流程（上链仍需钱包）
   const [demoMode, setDemoMode] = useState(false);
+
+  // 顶层标签页：独立演示台 / 集成演示（Kuru）
+  const [tab, setTab] = useState<"standalone" | "kuru">("standalone");
 
   // ===== V2：真实 AI 推理模式（多模型可选，配置存本地浏览器）=====
   const [aiMode, setAiMode] = useState(hasActiveKey());
@@ -186,7 +190,7 @@ export default function App() {
     const provider = activeProviderRef.current;
     if (!finalConsensus || anchoring || anchored) return;
     if (!provider || !walletAddress) {
-      setWalletError("当前是演示模式（未连接钱包），无法上链。请先点击右上角 CONNECT WALLET 连接钱包后再试。");
+      setWalletError("当前是演示模式（未连接钱包），无法上链。请先点击右上角「连接钱包」后再试。");
       return;
     }
 
@@ -638,6 +642,43 @@ export default function App() {
       />
 
       <main className="mx-auto max-w-6xl space-y-6 px-6 py-8">
+        {/* 顶层标签页：独立演示台 / 集成演示 */}
+        <div className="flex gap-1.5 rounded-xl border border-panel-edge bg-panel p-1.5">
+          <button
+            className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-bold transition ${
+              tab === "standalone"
+                ? "bg-gradient-to-r from-gold-500 to-gold-600 text-black shadow-[0_0_16px_rgba(217,169,78,0.25)]"
+                : "text-neutral-400 hover:bg-black/30 hover:text-gold-300"
+            }`}
+            onClick={() => setTab("standalone")}
+          >
+            ⚖ 独立演示台
+          </button>
+          <button
+            className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-bold transition ${
+              tab === "kuru"
+                ? "bg-gradient-to-r from-gold-500 to-gold-600 text-black shadow-[0_0_16px_rgba(217,169,78,0.25)]"
+                : "text-neutral-400 hover:bg-black/30 hover:text-gold-300"
+            }`}
+            onClick={() => setTab("kuru")}
+          >
+            🔗 集成演示 · Kuru Exchange
+          </button>
+        </div>
+
+        {tab === "kuru" && (
+          <IntegrationDemo
+            question={question}
+            juryRunning={juryRunning}
+            allCommitted={allCommitted}
+            revealed={revealed}
+            calculating={calculating}
+            finalVerdict={finalConsensus?.finalVerdict ?? null}
+            caseHash={caseHash}
+            onUseScenario={() => setQuestion(KURU_SCENARIO)}
+          />
+        )}
+
         <CaseInput
           question={question}
           onQuestionChange={setQuestion}
@@ -717,28 +758,28 @@ export default function App() {
         <section>
           <div className="mb-4 flex items-center gap-3">
             <span className="text-[11px] font-semibold tracking-[0.25em] text-gold-500">
-              02 / JURY PANEL
+              02 / 陪审团面板
             </span>
             <div className="h-px flex-1 bg-panel-edge" />
           </div>
 
           {demoMode && (
             <div className="mb-4 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2.5 text-center text-xs text-amber-300">
-              🎭 演示模式（未连接钱包）：盲审流程完整可跑，最后「Commit Verdict to Monad」上链前请先连接钱包
+              🎭 演示模式（未连接钱包）：盲审流程完整可跑，最后「将裁决锚定到 Monad」上链前请先连接钱包
             </div>
           )}
 
           {allCommitted && !revealed && (
             <div className="animate-expand-reveal mb-4 rounded-lg border border-gold-500/50 bg-gold-500/10 py-4 text-center font-mono text-sm tracking-[0.25em] text-gold-300">
-              ALL JURORS COMMITTED ✓
+              🎭 全体陪审员已密封承诺 ✓
               <span className="mt-1 block text-[10px] tracking-wider text-gold-600">
-                CASE HASH: {caseHash?.slice(0, 20)}...{caseHash?.slice(-10)}
+                案件哈希: {caseHash?.slice(0, 20)}...{caseHash?.slice(-10)}
               </span>
               <button
                 className="btn-gold mt-3 px-8 py-2 text-xs"
                 onClick={handleRevealJury}
               >
-                🔓 REVEAL JURY
+                🔓 揭晓裁决
               </button>
             </div>
           )}
@@ -766,7 +807,7 @@ export default function App() {
         )}
 
         <footer className="pt-4 pb-8 text-center text-[11px] text-neutral-700">
-          Agent Jury · Built on Monad Testnet · Commit-Reveal Blind Consensus
+          Agent Jury · 部署于 Monad 测试网 · Commit-Reveal 盲审共识
         </footer>
       </main>
     </div>

@@ -54,7 +54,7 @@ export default function AiSettings({ open, onClose, onSaved }: Props) {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="font-mono text-sm tracking-[0.25em] text-gold-300">
-                🧠 AI ENGINE SETTINGS
+                🧠 AI 引擎设置
               </h2>
               <p className="mt-1 text-[11px] text-neutral-500">
                 为 4 名陪审员选择推理大脑 · 7 家主流大模型随时切换
@@ -166,7 +166,7 @@ export default function AiSettings({ open, onClose, onSaved }: Props) {
               className="flex-1 rounded-lg bg-gradient-to-r from-gold-500 to-gold-600 py-2.5 font-mono text-xs font-bold tracking-[0.15em] text-black transition hover:brightness-110 hover:shadow-[0_0_20px_rgba(217,169,78,0.3)]"
               onClick={save}
             >
-              SAVE &amp; ENABLE LIVE ENGINE
+              保存并启用真实引擎
             </button>
             <button
               className="rounded-lg border border-panel-edge px-4 py-2.5 font-mono text-xs text-neutral-400 transition hover:border-red-500/50 hover:text-red-400"

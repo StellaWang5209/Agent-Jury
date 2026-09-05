@@ -8,12 +8,12 @@ const VERDICT_STYLE: Record<Verdict, string> = {
 };
 
 const STATUS_LABEL: Record<string, string> = {
-  IDLE: "IDLE",
-  THINKING: "THINKING",
-  COMMITTED: "COMMITTED",
-  REVEALING: "REVEALING",
-  VERIFIED: "VERIFIED",
-  FAILED: "VERIFICATION FAILED",
+  IDLE: "待命",
+  THINKING: "独立推理中",
+  COMMITTED: "已密封承诺",
+  REVEALING: "揭晓中",
+  VERIFIED: "校验通过",
+  FAILED: "校验失败",
 };
 
 export default function JurorCard({ juror }: { juror: JurorState }) {
@@ -64,7 +64,7 @@ export default function JurorCard({ juror }: { juror: JurorState }) {
       {isThinking && (
         <div className="animate-expand-reveal rounded-lg border border-panel-edge bg-ink-2 p-3 font-mono text-[11px] leading-relaxed">
           <p className="mb-1 text-[10px] tracking-wider text-gold-600">
-            REASONING LOG — 独立分析中，互不可见
+            推理日志 — 独立分析中，互不可见
           </p>
           <div className="max-h-24 space-y-1 overflow-hidden">
             {thinkingLog.slice(-4).map((line, i, arr) => (
@@ -79,7 +79,7 @@ export default function JurorCard({ juror }: { juror: JurorState }) {
               </p>
             ))}
             {thinkingLog.length === 0 && (
-              <p className="text-neutral-600">等待输入案件上下文…</p>
+              <p className="text-neutral-600">等待案件上下文输入…</p>
             )}
           </div>
           <p className="mt-1 text-neutral-600">
@@ -96,18 +96,18 @@ export default function JurorCard({ juror }: { juror: JurorState }) {
           }`}
         >
           <p className="mb-1 text-[10px] tracking-wider text-neutral-500">
-            COMMITMENT HASH
+            承诺哈希
           </p>
           <p className="break-all font-mono text-[11px] text-gold-300">
             {commitmentHash.slice(0, 34)}...{commitmentHash.slice(-6)}
           </p>
           <p className="mt-2 text-[11px] leading-relaxed text-neutral-500">
             🔒 该 Agent 的结论已密封在此哈希中（防篡改承诺）。
-            点击下方「🔓 REVEAL JURY」即可揭晓它的真实观点。
+            点击下方「🔓 揭晓裁决」即可揭晓它的真实观点。
           </p>
           {isRevealing && (
             <p className="mt-2 text-[11px] text-neutral-400">
-              Revealing salt & verdict<span className="dot-bounce">...</span>
+              正在揭晓盐值与裁决<span className="dot-bounce">...</span>
             </p>
           )}
         </div>
@@ -125,7 +125,7 @@ export default function JurorCard({ juror }: { juror: JurorState }) {
               {VERDICT_LABEL[result.verdict]}
             </span>
             <span className="text-xs text-neutral-400">
-              Confidence{" "}
+              置信度{" "}
               <span className="font-mono text-gold-300">
                 {result.confidence}
               </span>
@@ -151,11 +151,11 @@ export default function JurorCard({ juror }: { juror: JurorState }) {
           <div className="border-t border-panel-edge pt-2">
             {verified ? (
               <p className="font-mono text-[10px] tracking-wider text-emerald-400">
-                COMMIT VERIFIED ✓
+                承诺校验通过 ✓
               </p>
             ) : (
               <p className="font-mono text-[10px] tracking-wider text-red-400">
-                VERIFICATION FAILED ✗
+                校验失败 ✗
               </p>
             )}
           </div>

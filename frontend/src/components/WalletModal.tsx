@@ -25,7 +25,7 @@ export default function WalletModal({
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="mb-1 text-center font-mono text-sm tracking-[0.2em] text-gold-300">
-          SELECT WALLET
+          选择钱包
         </h3>
         <p className="mb-4 text-center text-[11px] text-neutral-500">
           检测到 {wallets.length} 个钱包

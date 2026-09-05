@@ -76,7 +76,7 @@ export default function FinalConsensus({
     <section className="panel panel-glow p-6">
       <div className="mb-4 flex items-center gap-3">
         <span className="text-[11px] font-semibold tracking-[0.25em] text-gold-500">
-          03 / FINAL CONSENSUS
+          03 / 最终共识
         </span>
         <div className="h-px flex-1 bg-panel-edge" />
       </div>
@@ -107,7 +107,7 @@ export default function FinalConsensus({
       {/* 最终裁决 */}
       <div className="mb-4 flex flex-col items-center rounded-lg border border-gold-dim/40 bg-gradient-to-b from-gold-500/5 to-transparent p-6">
         <p className="mb-2 text-[10px] tracking-[0.3em] text-neutral-500">
-          FINAL VERDICT · 固定代码统计，非 AI 决定
+          最终裁决 · 固定代码统计，非 AI 决定
         </p>
         {data?.finalVerdict != null ? (
           <span
@@ -119,7 +119,7 @@ export default function FinalConsensus({
           </span>
         ) : calculating ? (
           <span className="animate-pulse font-mono text-2xl tracking-[0.3em] text-gold-300">
-            CALCULATING CONSENSUS
+            共识计算中
             <span className="dot-bounce">...</span>
           </span>
         ) : (
@@ -159,7 +159,7 @@ export default function FinalConsensus({
       {votes.length > 0 && (
         <div className="mb-6">
           <p className="mb-2 text-[10px] tracking-[0.25em] text-neutral-500">
-            JUROR OPINIONS · 陪审员意见一览
+            陪审员意见一览
           </p>
           <div className="space-y-2">
             {votes.map((vote) => (
@@ -208,7 +208,7 @@ export default function FinalConsensus({
       <div className="mb-6 grid grid-cols-2 gap-3 text-xs">
         <div className="rounded-lg border border-panel-edge bg-ink-2 p-3">
           <p className="mb-1 text-[10px] tracking-wider text-neutral-500">
-            CONSENSUS CONFIDENCE
+            共识置信度
           </p>
           <p className="font-mono text-neutral-200">
             {data?.consensusConfidence != null
@@ -218,7 +218,7 @@ export default function FinalConsensus({
         </div>
         <div className="rounded-lg border border-panel-edge bg-ink-2 p-3">
           <p className="mb-1 text-[10px] tracking-wider text-neutral-500">
-            CASE HASH
+            案件哈希
           </p>
           <p className="break-all font-mono text-neutral-200">
             {shortHash(data?.caseHash ?? null)}
@@ -230,7 +230,7 @@ export default function FinalConsensus({
       <div className="rounded-lg border border-panel-edge bg-ink-2 p-4">
         <div className="mb-3 flex items-center justify-between">
           <p className="text-[10px] tracking-[0.2em] text-neutral-500">
-            MONAD STATUS
+            MONAD 上链状态
           </p>
           <span
             className={`font-mono text-[11px] tracking-wider ${
@@ -242,17 +242,17 @@ export default function FinalConsensus({
             }`}
           >
             {anchored
-              ? "ANCHORED ON MONAD ✓"
+              ? "已锚定 Monad ✓"
               : anchoring
-                ? "ANCHORING TO MONAD..."
-                : "NOT ANCHORED"}
+                ? "正在锚定上链…"
+                : "未上链"}
           </span>
         </div>
 
         {txHash && (
           <div className="mb-3 space-y-1 rounded-md border border-panel-edge p-2 font-mono text-[10px] text-neutral-400">
             <p>
-              TX:{" "}
+              交易:{" "}
               <a
                 className="text-gold-300 underline decoration-gold-dim"
                 href={`https://testnet.monadscan.com/tx/${txHash}`}
@@ -263,7 +263,7 @@ export default function FinalConsensus({
               </a>
             </p>
             <p>
-              CONTRACT:{" "}
+              合约:{" "}
               <a
                 className="text-gold-300 underline decoration-gold-dim"
                 href={`https://testnet.monadscan.com/address/${contractAddress}`}
@@ -282,10 +282,10 @@ export default function FinalConsensus({
           disabled={data?.finalVerdict == null || anchoring || anchored}
         >
           {anchored
-            ? "ANCHORED ON MONAD ✓"
+            ? "已锚定上链 ✓"
             : anchoring
-              ? "ANCHORING..."
-              : "⛓ COMMIT VERDICT TO MONAD"}
+              ? "上链中…"
+              : "⛓ 将裁决锚定到 Monad"}
         </button>
       </div>
 

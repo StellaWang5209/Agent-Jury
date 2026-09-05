@@ -35,7 +35,7 @@ if (me.status !== 200 || agent?.status !== "claimed") {
 const proj = await call("GET", `/api/agent/projects?eventId=${EVENT_ID}`);
 console.log("2) projects:", proj.status, JSON.stringify(proj.data).slice(0, 500));
 const d = proj.data?.data ?? {};
-const existing = d.projects?.[0];
+const existing = d.projects?.[0] ?? d.project ?? null;
 console.log("   event:", proj.data?.data?.event?.name ?? proj.data?.data?.event?.title ?? "n/a");
 
 // 3. 上传截图（申请 → 直传 → 确认）
@@ -57,13 +57,26 @@ for (const s of SHOTS) {
     process.exit(1);
   }
   const { uuid, uploadUrl, path: p } = apply.data.data;
-  const put = await fetch(uploadUrl, {
-    method: "PUT",
-    headers: { "Content-Type": "image/png" },
-    body: bin,
-  });
-  if (!put.ok) {
-    console.error(`   S3 PUT failed for ${s.file}:`, put.status);
+  let putOk = false;
+  for (let attempt = 1; attempt <= 4 && !putOk; attempt++) {
+    try {
+      const put = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": "image/png" },
+        body: bin,
+      });
+      if (put.ok) {
+        putOk = true;
+        break;
+      }
+      console.log(`   S3 PUT attempt ${attempt} -> HTTP ${put.status}, retrying...`);
+    } catch (e) {
+      console.log(`   S3 PUT attempt ${attempt} -> ${e.cause?.code ?? e.message}, retrying...`);
+    }
+    await new Promise((r) => setTimeout(r, 4000));
+  }
+  if (!putOk) {
+    console.error(`   S3 PUT failed for ${s.file} after 4 attempts`);
     process.exit(1);
   }
   const confirm = await call("POST", "/api/agent/uploads/confirm", { uuid });
@@ -78,7 +91,7 @@ for (const s of SHOTS) {
 const payload = {
   name: "Agent Jury — AI Agent 盲审共识陪审团",
   description:
-    "解决 AI Agent 群体从众/锚定问题：4 个完全独立的陪审 Agent（安全/意图/经济/对抗视角）在互不可见的环境下盲审同一案件，各自生成 salt 并提交 commitment 哈希密封结论；全部承诺后统一 Reveal，重算哈希验证未被篡改；固定代码统计共识（≥3 票裁决，Security 高置信 BLOCK 触发降级复核），最终结论与 4 个 commitment 锚定上链 Monad Testnet（AgentJuryRegistry，合约 0x2986c8094771162F39AD991d6dc87490149BfeA9）。支持多钱包连接（EIP-6963），未连钱包也可完整体验盲审流程。",
+    "解决 AI Agent 群体从众/锚定问题：4 个完全独立的陪审 Agent（安全/意图/经济/对抗视角）在互不可见的环境下盲审同一案件，各自生成 salt 并提交 commitment 哈希密封结论；全部承诺后统一 Reveal，重算哈希验证未被篡改；固定代码统计共识（≥3 票裁决，Security 高置信 BLOCK 触发降级复核），最终结论与 4 个 commitment 锚定上链 Monad Testnet（AgentJuryRegistry，合约 0x2986c8094771162F39AD991d6dc87490149BfeA9）。已上线真实大模型陪审员：支持 DeepSeek/智谱GLM/通义千问/Kimi/Gemini/Grok/OpenAI 七家模型一键切换，每位陪审员独立 API 调用盲审、互不可见（Key 仅存用户本地浏览器）。最终形态路线：用户为 4 名陪审员各自选用不同大模型，实现真正的多模型交叉盲审——当前黑客松版本为运行方便，由单一大模型完成 4 个陪审角色的任务。支持多钱包连接（EIP-6963），未连钱包也可完整体验盲审流程。",
   url: "https://128840e2f4b341a58f39bff9bb57b6d4.app.workbuddy.link",
   eventId: EVENT_ID,
   meta: {
