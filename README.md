@@ -1,5 +1,6 @@
 # Agent Jury — AI Agent 盲审共识陪审团
 
+> **Monad Blitz@惠州 黑客松参赛项目**
 > 让每一个 AI 决策，都经得起陪审。
 > **一个不收费的信任中间件：任何 AI Agent 在执行不可逆操作之前，先过一场 4 视角盲审。**
 
@@ -7,7 +8,7 @@
 [![Monad Testnet](https://img.shields.io/badge/CONTRACT-0x2986...eA9-836EF1)](https://testnet.monadscan.com/address/0x2986c8094771162F39AD991d6dc87490149BfeA9)
 [![GitHub](https://img.shields.io/badge/README-%E5%AE%8C%E6%95%B4%E8%B7%AF%E6%BC%94-24292F)](#)
 
-> 在线演示： <https://128840e2f4b341a58f39bff9bb57b6d4.app.workbuddy.link>
+> 🎬 **2 分 09 秒演示视频**：[`docs/AgentJury-Demo.mp4`](docs/AgentJury-Demo.mp4) —— 片头导览 → 独立演示台（危险案例盲审全流程）→ 集成演示（Kuru Exchange 风控回调拦截交易）→ 收尾。在线演示： <https://128840e2f4b341a58f39bff9bb57b6d4.app.workbuddy.link>
 
 ---
 
@@ -123,10 +124,20 @@ if (v === Verdict.BLOCK) revert BlockedByJury();
 
 ## 五、为什么构建在 Monad（2026.9 官网数据）
 
+Agent Jury 的产品形态对结算层有四个硬性要求——**高频上链、实时落账、秒级最终、成本趋零**。Monad 的架构恰好逐条满足：
+
+| Agent Jury 的需求 | Monad 提供的能力（官网最新） | 对 Agent Jury 的意义 |
+| --- | --- | --- |
+| 高频上链：每个案件 8+ 笔链上交易（4 commitment + 揭晓 + 锚定 + 验证），Agent 时代案件量会指数增长 | **10,000+ TPS** 设计容量 | 全生态 Agent 每天海量审批也不拥堵、不排队 |
+| 实时落账：裁决必须跟上 Agent 的执行节奏，审批不能成为执行瓶颈 | **300ms 出块**（主网实测 ~302ms） | 承诺与揭晓几乎即时落账，盲审流程一气呵成 |
+| 秒级最终性：宿主拿到的是"已最终确认"的裁决才敢自动放行/拦截 | **600ms 完整最终性**（MonadBFT 2 slot） | 签名前的风控窗口只有一秒级，裁决 1 秒内即可被宿主信任执行 |
+| 成本趋零：中间件免费，链上成本必须可忽略 | **近零交易费用** | 免费模式成立——链上成本不转嫁给宿主或用户 |
+| 宿主零改造：生态协议都是 EVM 技术栈 | **全 EVM 字节码级兼容** | Solidity 合约直接读取裁决，3 行代码接入 |
+| 结算层必须可信中立：裁决是"链上事实"，不能依赖单一运营方 | **~200 个独立验证者 · 30+ 国家 · 消费级硬件** | 裁决锚定在去中心化结算层，任何人都可公开验证 |
+
+此外，**Monad 的并行执行与 4 陪审员并行盲审在哲学上同构**——链上交易互不阻塞，链下裁决互不可见，两者天然是一对。
 
 > Monad 主网已承载 **$945M TVL、7.28 亿+ 笔交易、138+ 应用**（官网数据），Agent Hub 更是把 AI Agent 列为生态一级公民。**Agent Jury 是这条 AI 叙事上缺失的一层：Agent 的执行速度由 Monad 保证，Agent 的决策可信由 Agent Jury 保证。**
->
-> 不是我们选择了 Monad——是产品形态只有 Monad 能承载：同样的"每案 8+ 笔上链"放在以太坊主网，光手续费就让免费模式直接破产。此外 Monad 的并行执行与 4 陪审员并行盲审在哲学上同构。
 
 ---
 
@@ -190,7 +201,8 @@ cd ../contracts && npm install && npx hardhat test
 - **V3**：仲裁 API / SDK 正式发布，供宿主项目 3 行代码接入
 - **V4**：去中心化仲裁市场 + 陪审员信誉体系
 
-## 附加信息
+## 参赛信息
 
+- **比赛**：Monad Blitz@惠州（2026）
 - **演示**：https://128840e2f4b341a58f39bff9bb57b6d4.app.workbuddy.link
 - **合约**：0x2986c8094771162F39AD991d6dc87490149BfeA9（Monad Testnet）
