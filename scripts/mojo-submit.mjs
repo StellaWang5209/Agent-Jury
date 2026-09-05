@@ -91,7 +91,7 @@ for (const s of SHOTS) {
 const payload = {
   name: "Agent Jury — AI Agent 盲审共识陪审团",
   description:
-    "解决 AI Agent 群体从众/锚定问题：4 个完全独立的陪审 Agent（安全/意图/经济/对抗视角）在互不可见的环境下盲审同一案件，各自生成 salt 并提交 commitment 哈希密封结论；全部承诺后统一 Reveal，重算哈希验证未被篡改；固定代码统计共识（≥3 票裁决，Security 高置信 BLOCK 触发降级复核），最终结论与 4 个 commitment 锚定上链 Monad Testnet（AgentJuryRegistry，合约 0x2986c8094771162F39AD991d6dc87490149BfeA9）。已上线真实大模型陪审员：支持 DeepSeek/智谱GLM/通义千问/Kimi/Gemini/Grok/OpenAI 七家模型一键切换，每位陪审员独立 API 调用盲审、互不可见（Key 仅存用户本地浏览器）。最终形态路线：用户为 4 名陪审员各自选用不同大模型，实现真正的多模型交叉盲审——当前黑客松版本为运行方便，由单一大模型完成 4 个陪审角色的任务。支持多钱包连接（EIP-6963），未连钱包也可完整体验盲审流程。",
+    "解决 AI Agent 群体从众/锚定问题：4 个完全独立的陪审 Agent（安全/意图/经济/对抗视角）在互不可见的环境下盲审同一案件，各自生成 salt 并提交 commitment 哈希密封结论；全部承诺后统一 Reveal，重算哈希验证未被篡改；固定代码统计共识（≥3 票裁决，Security 高置信 BLOCK 触发降级复核），最终结论与 4 个 commitment 锚定上链 Monad Testnet（AgentJuryRegistry，合约 0x2986c8094771162F39AD991d6dc87490149BfeA9）。演示站含两个标签页——【演示一·独立演示台】输入任意案件完整跑盲审全流程，危险案例实测 3 BLOCK+1 REVIEW、安全案例 ALLOW；【演示二·集成演示·Kuru Exchange】以 Monad 生态旗舰订单簿 DEX Kuru 为宿主，交易 Agent 在签名前调用 requestAudit() 发起风控审批，经 5 步集成管线（发起审批→构建案件→4 陪审员盲审→揭晓共识→裁决回调）后执行/拦截/转人工。集成场景合理性：①订单簿 DEX 的做市/套利本就由程序化 Agent 7×24 执行，是 Agent 渗透率最高的真实场景；②prompt injection/私钥泄露的损失在签名瞬间定格（Unlimited Approve 不可逆），签名前是唯一有效干预窗口；③中间件不碰私钥不托管资产，宿主一行 review() 换一层独立风控，零侵入可插拔；④跨网演示反映真实工程路径（测试网验证→同构部署主网），模拟的只是宿主侧数据，中间件侧全程真实盲审+真实上链。已上线真实大模型陪审员：支持 DeepSeek/智谱GLM/通义千问/Kimi/Gemini/Grok/OpenAI 七家模型一键切换，每位陪审员独立 API 调用盲审、互不可见（Key 仅存用户本地浏览器）。最终形态路线：用户为 4 名陪审员各自选用不同大模型，实现真正的多模型交叉盲审——当前黑客松版本为运行方便，由单一大模型完成 4 个陪审角色的任务。支持多钱包连接（EIP-6963），未连钱包也可完整体验盲审流程。",
   url: "https://128840e2f4b341a58f39bff9bb57b6d4.app.workbuddy.link",
   eventId: EVENT_ID,
   meta: {
