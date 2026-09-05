@@ -1,6 +1,5 @@
 # Agent Jury — AI Agent 盲审共识陪审团
 
-> **Monad Blitz@惠州 黑客松参赛项目**
 > 让每一个 AI 决策，都经得起陪审。
 > **一个不收费的信任中间件：任何 AI Agent 在执行不可逆操作之前，先过一场 4 视角盲审。**
 
@@ -201,8 +200,7 @@ cd ../contracts && npm install && npx hardhat test
 - **V3**：仲裁 API / SDK 正式发布，供宿主项目 3 行代码接入
 - **V4**：去中心化仲裁市场 + 陪审员信誉体系
 
-## 参赛信息
+## 附加信息
 
-- **比赛**：Monad Blitz@惠州（2026）
 - **演示**：https://128840e2f4b341a58f39bff9bb57b6d4.app.workbuddy.link
 - **合约**：0x2986c8094771162F39AD991d6dc87490149BfeA9（Monad Testnet）
