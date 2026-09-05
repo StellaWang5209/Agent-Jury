@@ -119,7 +119,7 @@ if (v === Verdict.BLOCK) revert BlockedByJury();
 
 ---
 
-## 五、为什么构建在 Monad（2026.9 官网数据）
+## 五、为什么构建在 Monad
 
 Agent Jury 的产品形态对结算层有四个硬性要求——**高频上链、实时落账、秒级最终、成本趋零**。Monad 的架构恰好逐条满足：
 
