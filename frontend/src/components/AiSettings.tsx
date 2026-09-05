@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { getDeepseekKey, setDeepseekKey } from "../jury/llmProvider";
+import {
+  LLM_PROVIDERS,
+  getActiveConfig,
+  setActiveConfig,
+} from "../jury/llmProvider";
+import type { LLMProviderInfo } from "../jury/llmProvider";
 
 interface Props {
   open: boolean;
@@ -9,32 +14,39 @@ interface Props {
 }
 
 /**
- * AI 设置面板：填入 DeepSeek API Key 后，4 名陪审员由真实大模型独立推理。
- * Key 仅存浏览器 localStorage，不进代码库、不上传任何服务器。
+ * AI 引擎设置面板：选择大模型厂商 + 填入 API Key。
+ * 配置仅存浏览器 localStorage，不进代码库、不上传任何服务器。
  */
 export default function AiSettings({ open, onClose, onSaved }: Props) {
+  const [providerId, setProviderId] = useState<string>("deepseek");
   const [key, setKey] = useState("");
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    if (open) setKey(getDeepseekKey());
+    if (!open) return;
+    const active = getActiveConfig();
+    setProviderId(active?.providerId ?? "deepseek");
+    setKey(active?.apiKey ?? "");
   }, [open]);
 
   if (!open) return null;
 
+  const provider: LLMProviderInfo =
+    LLM_PROVIDERS.find((p) => p.id === providerId) ?? LLM_PROVIDERS[0];
+
   const save = () => {
-    setDeepseekKey(key);
+    setActiveConfig(providerId, key);
     onSaved();
     onClose();
   };
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/70 p-4"
       onClick={onClose}
     >
       <div
-        className="animate-expand-reveal w-[26rem] max-w-full rounded-xl border border-gold-dim bg-panel p-6 shadow-2xl"
+        className="animate-expand-reveal my-8 w-[32rem] max-w-full rounded-xl border border-gold-dim bg-panel p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
@@ -50,20 +62,53 @@ export default function AiSettings({ open, onClose, onSaved }: Props) {
         </div>
 
         <p className="mb-3 text-xs leading-relaxed text-neutral-400">
-          填入 DeepSeek API Key 后，4 名陪审员将由{" "}
-          <span className="text-gold-300">真实大模型独立盲审</span>（每案约
-          0.01~0.05 元）。未配置时自动使用本地模拟数据。
+          选择驱动 4 名陪审员的大模型。每位陪审员由{" "}
+          <span className="text-gold-300">独立 API 调用</span>
+          盲审，互不可见对方输出。
         </p>
 
+        {/* 厂商选择 */}
+        <label className="mb-2 block text-[11px] font-semibold tracking-wider text-neutral-500">
+          选择模型厂商
+        </label>
+        <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {LLM_PROVIDERS.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => setProviderId(p.id)}
+              className={`rounded-lg border px-3 py-2 text-left transition ${
+                p.id === providerId
+                  ? "border-gold-500/70 bg-gold-500/10"
+                  : "border-panel-edge bg-black/20 hover:border-gold-500/40"
+              }`}
+            >
+              <div
+                className={`text-xs font-bold ${
+                  p.id === providerId ? "text-gold-300" : "text-neutral-300"
+                }`}
+              >
+                {p.name}
+              </div>
+              <div className="mt-0.5 font-mono text-[10px] text-neutral-500">
+                {p.model}
+              </div>
+              <div className="mt-0.5 text-[10px] text-neutral-600">
+                {p.note}
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* API Key 输入 */}
         <label className="mb-1.5 block text-[11px] font-semibold tracking-wider text-neutral-500">
-          DEEPSEEK API KEY
+          {provider.name} API KEY
         </label>
         <div className="mb-2 flex gap-2">
           <input
             type={show ? "text" : "password"}
             value={key}
             onChange={(e) => setKey(e.target.value)}
-            placeholder="sk-..."
+            placeholder={provider.keyHint}
             className="min-w-0 flex-1 rounded-lg border border-panel-edge bg-black/40 px-3 py-2 font-mono text-xs text-neutral-200 outline-none transition focus:border-gold-500/60"
           />
           <button
@@ -78,12 +123,12 @@ export default function AiSettings({ open, onClose, onSaved }: Props) {
           🔒 Key 只保存在你的浏览器 localStorage，不进代码库、不上传。
           获取地址：
           <a
-            href="https://platform.deepseek.com/api_keys"
+            href={provider.keyUrl}
             target="_blank"
             rel="noreferrer"
             className="text-gold-400 underline hover:text-gold-300"
           >
-            platform.deepseek.com/api_keys
+            {provider.keyUrl.replace("https://", "")}
           </a>
         </p>
 
@@ -98,7 +143,7 @@ export default function AiSettings({ open, onClose, onSaved }: Props) {
             className="rounded-lg border border-panel-edge px-4 py-2 font-mono text-xs text-neutral-400 transition hover:border-red-500/50 hover:text-red-400"
             onClick={() => {
               setKey("");
-              setDeepseekKey("");
+              setActiveConfig("", "");
               onSaved();
               onClose();
             }}

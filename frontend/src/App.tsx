@@ -7,8 +7,8 @@ import { JURORS, DEMO_CASES } from "./data/jurors";
 import { evaluateCaseSync, getThinkingSteps } from "./jury/mockProvider";
 import {
   evaluateCaseLLM,
-  getDeepseekKey,
-  hasDeepseekKey,
+  getActiveConfig,
+  hasActiveKey,
 } from "./jury/llmProvider";
 import AiSettings from "./components/AiSettings";
 import {
@@ -63,9 +63,12 @@ export default function App() {
   // 演示模式：未连接钱包也能完整体验盲审流程（上链仍需钱包）
   const [demoMode, setDemoMode] = useState(false);
 
-  // ===== V2：真实 AI 推理模式（DeepSeek，Key 存本地浏览器）=====
-  const [aiMode, setAiMode] = useState(hasDeepseekKey());
+  // ===== V2：真实 AI 推理模式（多模型可选，配置存本地浏览器）=====
+  const [aiMode, setAiMode] = useState(hasActiveKey());
   const [aiSettingsOpen, setAiSettingsOpen] = useState(false);
+  const activeLLM = aiMode ? getActiveConfig() : null;
+  const engineProviderName = activeLLM?.provider.name || "AI";
+  const engineModel = activeLLM?.provider.model || "";
 
   // ===== 第八阶段：Monad 上链状态 =====
   const [anchoring, setAnchoring] = useState(false);
@@ -318,8 +321,8 @@ export default function App() {
     caseHashRef.current = hash;
     setCaseHash(hash);
 
-    // ===== V2：配置了 DeepSeek Key → 4 名陪审员由真实大模型独立盲审 =====
-    if (aiMode && hasDeepseekKey()) {
+    // ===== V2：配置了大模型 Key → 4 名陪审员由真实大模型独立盲审 =====
+    if (aiMode && hasActiveKey()) {
       runJuryLLM(caseData, hash);
       return;
     }
@@ -434,13 +437,20 @@ export default function App() {
 
   const runJuryLLM = (caseData: CaseData, caseHashStr: string) => {
     const runId = runIdRef.current;
+    const active = getActiveConfig();
+    if (!active) {
+      // 配置在运行中被清空（理论上不会发生：调用前已检查）→ 复位并退出
+      setJuryRunning(false);
+      return;
+    }
+    const { provider, apiKey } = active;
 
     // 全部卡片进入 THINKING，初始日志
     setJurors((prev) =>
       prev.map((j) => ({
         ...j,
         status: "THINKING" as const,
-        thinkingLog: [`🧠 真实大模型推理启动（${j.name}）…`],
+        thinkingLog: [`🧠 真实大模型 ${provider.name} · ${provider.model} 推理启动（${j.name}）…`],
       }))
     );
 
@@ -450,7 +460,7 @@ export default function App() {
           const result = await evaluateCaseLLM(
             juror.name,
             caseData,
-            getDeepseekKey(),
+            { endpoint: provider.endpoint, model: provider.model, apiKey },
             (step) => {
               if (runId === runIdRef.current) appendThinking(juror.id, step);
             }
@@ -479,7 +489,7 @@ export default function App() {
           const commitment = sealAndCommit(juror.id, result, caseHashStr);
           appendThinking(
             juror.id,
-            "⚠ DeepSeek 调用失败（网络/额度/CORS），本陪审员回退本地模拟推理"
+            `⚠ ${provider.name} 调用失败（网络/额度/CORS），本陪审员回退本地模拟推理`
           );
           setJurors((prev) =>
             prev.map((j) =>
@@ -623,7 +633,7 @@ export default function App() {
       <AiSettings
         open={aiSettingsOpen}
         onClose={() => setAiSettingsOpen(false)}
-        onSaved={() => setAiMode(hasDeepseekKey())}
+        onSaved={() => setAiMode(hasActiveKey())}
       />
 
       <main className="mx-auto max-w-6xl space-y-6 px-6 py-8">
@@ -635,23 +645,55 @@ export default function App() {
           revealed={revealed}
         />
 
-        {/* 推理引擎状态条：真实 AI / 本地模拟 */}
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-panel-edge bg-panel px-4 py-2.5 text-xs">
+        {/* 推理引擎状态条（一等公民：真实 AI 金色高亮 / 本地模拟灰显） */}
+        <div
+          className={`flex flex-wrap items-center justify-between gap-3 rounded-xl border px-5 py-3.5 ${
+            aiMode
+              ? "border-gold-500/60 bg-gradient-to-r from-gold-500/15 via-gold-500/5 to-transparent shadow-[0_0_24px_rgba(217,169,78,0.15)]"
+              : "border-panel-edge bg-panel"
+          }`}
+        >
           {aiMode ? (
-            <span className="text-emerald-400">
-              🧠 推理引擎：<b className="text-gold-300">DeepSeek 真实大模型</b>
-              （4 名陪审员独立 API 调用 · 盲审）
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full border border-gold-500/60 bg-gold-500/15 text-base">
+                🧠
+              </span>
+              <div>
+                <div className="text-sm font-bold text-gold-300">
+                  真实 AI 引擎：{engineProviderName} · {engineModel}
+                </div>
+                <div className="text-[11px] text-neutral-400">
+                  4 名陪审员由 {engineProviderName} 独立 API 调用盲审 · 互不可见
+                </div>
+              </div>
+              <span className="ml-1 rounded-full border border-emerald-500/50 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold tracking-wider text-emerald-400">
+                LIVE
+              </span>
+            </div>
           ) : (
-            <span className="text-neutral-500">
-              🧠 推理引擎：本地模拟数据（未配置 API Key，可用于演示流程）
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full border border-panel-edge bg-black/30 text-base opacity-70">
+                🎭
+              </span>
+              <div>
+                <div className="text-sm font-bold text-neutral-400">
+                  本地模拟数据（演示流程用）
+                </div>
+                <div className="text-[11px] text-neutral-600">
+                  配置任一大模型 API Key，即可启用真实 AI 盲审
+                </div>
+              </div>
+            </div>
           )}
           <button
-            className="font-mono text-[11px] tracking-[0.15em] text-gold-500 transition hover:text-gold-300"
+            className={`rounded-lg px-4 py-2 font-mono text-[11px] font-bold tracking-[0.15em] transition ${
+              aiMode
+                ? "border border-gold-500/60 text-gold-300 hover:bg-gold-500/15"
+                : "bg-gradient-to-r from-gold-500 to-gold-600 text-black hover:brightness-110"
+            }`}
             onClick={() => setAiSettingsOpen(true)}
           >
-            ⚙ AI SETTINGS
+            {aiMode ? "⚙ 切换模型" : "⚡ 启用真实 AI"}
           </button>
         </div>
 
