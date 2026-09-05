@@ -196,8 +196,7 @@ cd ../contracts && npm install && npx hardhat test
 - **V3**：仲裁 API / SDK 正式发布，供宿主项目 3 行代码接入
 - **V4**：去中心化仲裁市场 + 陪审员信誉体系
 
-## 参赛信息
+## 其他信息
 
-- **比赛**：Monad Blitz@惠州（2026）
 - **演示**：https://128840e2f4b341a58f39bff9bb57b6d4.app.workbuddy.link
 - **合约**：0x2986c8094771162F39AD991d6dc87490149BfeA9（Monad Testnet）
