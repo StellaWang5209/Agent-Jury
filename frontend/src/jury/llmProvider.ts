@@ -1,7 +1,7 @@
 import type { CaseData, JurorResult, Verdict } from "../types";
 
 // ===== 多模型 LLM Provider（V2）=====
-// 支持 DeepSeek / 智谱 GLM / 通义千问 / Kimi / OpenAI，
+// 支持 DeepSeek / 智谱 GLM / 通义千问 / Kimi / OpenAI / Gemini / Grok，
 // 配置（厂商 + Key）仅存浏览器 localStorage，不进代码库、不上传。
 // 4 个陪审员 = 4 次完全独立的 API 调用：每次调用只接收 (role, caseData)，
 // 接口层面保证盲审。
@@ -13,26 +13,31 @@ const LEGACY_KEY = "agent-jury-deepseek-key";
 export interface LLMProviderInfo {
   id: string;
   name: string;
+  emoji: string; // 厂商标识表情，用于卡片视觉区分
   model: string;
   endpoint: string;
   keyHint: string; // Key 前缀样式提示
   keyUrl: string; // 获取 Key 的地址
   note: string; // 特点说明
+  tag?: string; // 推荐标记
 }
 
 export const LLM_PROVIDERS: LLMProviderInfo[] = [
   {
     id: "deepseek",
     name: "DeepSeek",
+    emoji: "🐋",
     model: "deepseek-chat",
     endpoint: "https://api.deepseek.com/chat/completions",
     keyHint: "sk-...",
     keyUrl: "https://platform.deepseek.com/api_keys",
     note: "推荐 · 便宜 · 国内直连",
+    tag: "推荐",
   },
   {
     id: "zhipu",
     name: "智谱 GLM",
+    emoji: "🧩",
     model: "glm-4-flash",
     endpoint: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
     keyHint: "xxxxxxxx.xxxxxxxx",
@@ -42,6 +47,7 @@ export const LLM_PROVIDERS: LLMProviderInfo[] = [
   {
     id: "qwen",
     name: "通义千问",
+    emoji: "🌏",
     model: "qwen-plus",
     endpoint:
       "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
@@ -52,6 +58,7 @@ export const LLM_PROVIDERS: LLMProviderInfo[] = [
   {
     id: "moonshot",
     name: "Kimi",
+    emoji: "🌙",
     model: "moonshot-v1-8k",
     endpoint: "https://api.moonshot.cn/v1/chat/completions",
     keyHint: "sk-...",
@@ -59,8 +66,30 @@ export const LLM_PROVIDERS: LLMProviderInfo[] = [
     note: "长文本推理",
   },
   {
+    id: "gemini",
+    name: "Gemini",
+    emoji: "♊",
+    model: "gemini-2.0-flash",
+    endpoint:
+      "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+    keyHint: "AIza...",
+    keyUrl: "https://aistudio.google.com/apikey",
+    note: "Google · 免费额度 · 需海外网络",
+  },
+  {
+    id: "grok",
+    name: "Grok",
+    emoji: "🛰️",
+    model: "grok-3-mini",
+    endpoint: "https://api.x.ai/v1/chat/completions",
+    keyHint: "xai-...",
+    keyUrl: "https://console.x.ai",
+    note: "xAI · 红队风格契合 · 需海外网络",
+  },
+  {
     id: "openai",
     name: "OpenAI",
+    emoji: "🟢",
     model: "gpt-4o-mini",
     endpoint: "https://api.openai.com/v1/chat/completions",
     keyHint: "sk-...",

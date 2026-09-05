@@ -68,6 +68,7 @@ export default function App() {
   const [aiSettingsOpen, setAiSettingsOpen] = useState(false);
   const activeLLM = aiMode ? getActiveConfig() : null;
   const engineProviderName = activeLLM?.provider.name || "AI";
+  const engineProviderEmoji = activeLLM?.provider.emoji || "🧠";
   const engineModel = activeLLM?.provider.model || "";
 
   // ===== 第八阶段：Monad 上链状态 =====
@@ -645,56 +646,71 @@ export default function App() {
           revealed={revealed}
         />
 
-        {/* 推理引擎状态条（一等公民：真实 AI 金色高亮 / 本地模拟灰显） */}
+        {/* 推理引擎状态条（一等公民：真实 AI 金色高亮 + 呼吸灯 / 本地模拟灰显 + 醒目 CTA） */}
         <div
-          className={`flex flex-wrap items-center justify-between gap-3 rounded-xl border px-5 py-3.5 ${
+          className={`relative overflow-hidden rounded-xl border px-5 py-4 ${
             aiMode
-              ? "border-gold-500/60 bg-gradient-to-r from-gold-500/15 via-gold-500/5 to-transparent shadow-[0_0_24px_rgba(217,169,78,0.15)]"
-              : "border-panel-edge bg-panel"
+              ? "border-gold-500/70 bg-gradient-to-r from-gold-500/20 via-gold-500/5 to-transparent shadow-[0_0_28px_rgba(217,169,78,0.2)]"
+              : "border-dashed border-gold-500/30 bg-panel"
           }`}
         >
-          {aiMode ? (
-            <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full border border-gold-500/60 bg-gold-500/15 text-base">
-                🧠
-              </span>
-              <div>
-                <div className="text-sm font-bold text-gold-300">
-                  真实 AI 引擎：{engineProviderName} · {engineModel}
-                </div>
-                <div className="text-[11px] text-neutral-400">
-                  4 名陪审员由 {engineProviderName} 独立 API 调用盲审 · 互不可见
-                </div>
-              </div>
-              <span className="ml-1 rounded-full border border-emerald-500/50 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold tracking-wider text-emerald-400">
-                LIVE
-              </span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full border border-panel-edge bg-black/30 text-base opacity-70">
-                🎭
-              </span>
-              <div>
-                <div className="text-sm font-bold text-neutral-400">
-                  本地模拟数据（演示流程用）
-                </div>
-                <div className="text-[11px] text-neutral-600">
-                  配置任一大模型 API Key，即可启用真实 AI 盲审
-                </div>
-              </div>
-            </div>
+          {aiMode && (
+            <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold-400 to-transparent" />
           )}
-          <button
-            className={`rounded-lg px-4 py-2 font-mono text-[11px] font-bold tracking-[0.15em] transition ${
-              aiMode
-                ? "border border-gold-500/60 text-gold-300 hover:bg-gold-500/15"
-                : "bg-gradient-to-r from-gold-500 to-gold-600 text-black hover:brightness-110"
-            }`}
-            onClick={() => setAiSettingsOpen(true)}
-          >
-            {aiMode ? "⚙ 切换模型" : "⚡ 启用真实 AI"}
-          </button>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            {aiMode ? (
+              <div className="flex items-center gap-3">
+                <span className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-gold-500/60 bg-gradient-to-b from-gold-500/25 to-gold-500/5 text-xl shadow-[0_0_14px_rgba(217,169,78,0.3)]">
+                  {engineProviderEmoji}
+                  <span className="absolute -right-0.5 -top-0.5 flex h-3 w-3">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                    <span className="relative inline-flex h-3 w-3 rounded-full border-2 border-panel bg-emerald-400" />
+                  </span>
+                </span>
+                <div>
+                  <div className="flex items-center gap-2 text-sm font-bold text-gold-300">
+                    真实 AI 引擎
+                    <span className="text-neutral-200">
+                      {engineProviderName} · {engineModel}
+                    </span>
+                    <span className="rounded-full border border-emerald-500/50 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold tracking-wider text-emerald-400">
+                      ● LIVE
+                    </span>
+                  </div>
+                  <div className="mt-0.5 text-[11px] text-neutral-400">
+                    4 名陪审员由 {engineProviderName}{" "}
+                    <b className="text-gold-500/90">独立 API 调用</b> 盲审 ·
+                    互不可见 · 判决哈希上链可验证
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-panel-edge bg-black/30 text-xl opacity-70">
+                  🎭
+                </span>
+                <div>
+                  <div className="text-sm font-bold text-neutral-300">
+                    本地模拟数据（演示流程用）
+                  </div>
+                  <div className="mt-0.5 text-[11px] text-neutral-500">
+                    配置 7 家大模型任意一家的 API Key，即可启用
+                    <b className="text-gold-400">真实 AI 盲审</b>
+                  </div>
+                </div>
+              </div>
+            )}
+            <button
+              className={`rounded-lg px-5 py-2.5 font-mono text-[11px] font-bold tracking-[0.15em] transition ${
+                aiMode
+                  ? "border border-gold-500/60 bg-gold-500/10 text-gold-300 hover:bg-gold-500/20"
+                  : "animate-pulse bg-gradient-to-r from-gold-500 to-gold-600 text-black shadow-[0_0_20px_rgba(217,169,78,0.35)] hover:brightness-110"
+              }`}
+              onClick={() => setAiSettingsOpen(true)}
+            >
+              {aiMode ? "⚙ 切换模型（7 家可选）" : "⚡ 启用真实 AI 盲审"}
+            </button>
+          </div>
         </div>
 
         {/* 02 / JURY PANEL */}
