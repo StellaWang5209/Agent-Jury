@@ -23,3 +23,6 @@ Thumbs.db
 # 部署用构建产物
 site-dist/
 screenshots/.edgeprofile/
+
+# E2E 测试产物
+.e2e/

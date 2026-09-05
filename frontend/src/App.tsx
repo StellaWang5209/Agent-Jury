@@ -6,6 +6,12 @@ import FinalConsensus from "./components/FinalConsensus";
 import { JURORS, DEMO_CASES } from "./data/jurors";
 import { evaluateCaseSync, getThinkingSteps } from "./jury/mockProvider";
 import {
+  evaluateCaseLLM,
+  getDeepseekKey,
+  hasDeepseekKey,
+} from "./jury/llmProvider";
+import AiSettings from "./components/AiSettings";
+import {
   checkChain,
   connectWallet,
   getDiscoveredWallets,
@@ -28,7 +34,9 @@ import {
 } from "./jury/crypto";
 import { Verdict } from "./types";
 import type {
+  CaseData,
   FinalConsensus as FinalConsensusData,
+  JurorResult,
   JurorState,
   Verdict as VerdictType,
 } from "./types";
@@ -54,6 +62,10 @@ export default function App() {
   const [caseHash, setCaseHash] = useState<string | null>(null);
   // 演示模式：未连接钱包也能完整体验盲审流程（上链仍需钱包）
   const [demoMode, setDemoMode] = useState(false);
+
+  // ===== V2：真实 AI 推理模式（DeepSeek，Key 存本地浏览器）=====
+  const [aiMode, setAiMode] = useState(hasDeepseekKey());
+  const [aiSettingsOpen, setAiSettingsOpen] = useState(false);
 
   // ===== 第八阶段：Monad 上链状态 =====
   const [anchoring, setAnchoring] = useState(false);
@@ -306,6 +318,12 @@ export default function App() {
     caseHashRef.current = hash;
     setCaseHash(hash);
 
+    // ===== V2：配置了 DeepSeek Key → 4 名陪审员由真实大模型独立盲审 =====
+    if (aiMode && hasDeepseekKey()) {
+      runJuryLLM(caseData, hash);
+      return;
+    }
+
     // 1. 同步完成全部盲审计算：每个 Agent 独立评估（互不读取对方输出），
     //    独立生成 salt → reasonHash → commitmentHash，机密数据只存内存
     const plan = JURORS.map((juror) => {
@@ -379,6 +397,107 @@ export default function App() {
       );
       setJuryRunning(false);
     }, 12000);
+  };
+
+  // ===== V2：真实 LLM 盲审流程 =====
+  // 4 次完全独立的 DeepSeek API 调用（接口层面保证盲审：互不可见对方输出），
+  // 谁先返回谁先 COMMITTED（天然交错）。任一调用失败 → 该陪审员回退本地
+  // 模拟推理并明确标注，保证演示永不卡死。
+  const appendThinking = (jurorId: number, step: string) => {
+    setJurors((prev) =>
+      prev.map((j) =>
+        j.id === jurorId
+          ? { ...j, thinkingLog: [...j.thinkingLog, step] }
+          : j
+      )
+    );
+  };
+
+  const sealAndCommit = (
+    jurorId: number,
+    result: JurorResult,
+    caseHashStr: string
+  ): string => {
+    const salt = randomSalt();
+    const reasonHash = computeReasonHash(result);
+    const commitment = computeCommitmentHash(
+      caseHashStr,
+      jurorId,
+      result.verdict,
+      result.confidence,
+      reasonHash,
+      salt
+    );
+    secretsRef.current.set(jurorId, { salt, reasonHash, result });
+    return commitment;
+  };
+
+  const runJuryLLM = (caseData: CaseData, caseHashStr: string) => {
+    const runId = runIdRef.current;
+
+    // 全部卡片进入 THINKING，初始日志
+    setJurors((prev) =>
+      prev.map((j) => ({
+        ...j,
+        status: "THINKING" as const,
+        thinkingLog: [`🧠 真实大模型推理启动（${j.name}）…`],
+      }))
+    );
+
+    Promise.all(
+      JURORS.map(async (juror) => {
+        try {
+          const result = await evaluateCaseLLM(
+            juror.name,
+            caseData,
+            getDeepseekKey(),
+            (step) => {
+              if (runId === runIdRef.current) appendThinking(juror.id, step);
+            }
+          );
+          if (runId !== runIdRef.current) return;
+          const commitment = sealAndCommit(juror.id, result, caseHashStr);
+          setJurors((prev) =>
+            prev.map((j) =>
+              j.id === juror.id
+                ? {
+                    ...j,
+                    status: "COMMITTED" as const,
+                    commitmentHash: commitment,
+                    thinkingLog: [
+                      ...j.thinkingLog,
+                      "✓ 独立裁决完成，承诺已密封（等待统一揭晓）",
+                    ],
+                  }
+                : j
+            )
+          );
+        } catch (err) {
+          if (runId !== runIdRef.current) return;
+          console.warn(`[Jury] ${juror.name} LLM 调用失败，回退模拟:`, err);
+          const result = evaluateCaseSync(juror.name, caseData);
+          const commitment = sealAndCommit(juror.id, result, caseHashStr);
+          appendThinking(
+            juror.id,
+            "⚠ DeepSeek 调用失败（网络/额度/CORS），本陪审员回退本地模拟推理"
+          );
+          setJurors((prev) =>
+            prev.map((j) =>
+              j.id === juror.id
+                ? {
+                    ...j,
+                    status: "COMMITTED" as const,
+                    commitmentHash: commitment,
+                  }
+                : j
+            )
+          );
+        }
+      })
+    ).then(() => {
+      if (runId !== runIdRef.current) return;
+      setJuryRunning(false);
+    });
   };
 
   // ===== 第四阶段：Reveal 揭晓 + 重算 commitment 校验 + 固定代码共识 =====
@@ -501,6 +620,12 @@ export default function App() {
         onClose={() => setWalletModalOpen(false)}
       />
 
+      <AiSettings
+        open={aiSettingsOpen}
+        onClose={() => setAiSettingsOpen(false)}
+        onSaved={() => setAiMode(hasDeepseekKey())}
+      />
+
       <main className="mx-auto max-w-6xl space-y-6 px-6 py-8">
         <CaseInput
           question={question}
@@ -509,6 +634,26 @@ export default function App() {
           juryRunning={juryRunning}
           revealed={revealed}
         />
+
+        {/* 推理引擎状态条：真实 AI / 本地模拟 */}
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-panel-edge bg-panel px-4 py-2.5 text-xs">
+          {aiMode ? (
+            <span className="text-emerald-400">
+              🧠 推理引擎：<b className="text-gold-300">DeepSeek 真实大模型</b>
+              （4 名陪审员独立 API 调用 · 盲审）
+            </span>
+          ) : (
+            <span className="text-neutral-500">
+              🧠 推理引擎：本地模拟数据（未配置 API Key，可用于演示流程）
+            </span>
+          )}
+          <button
+            className="font-mono text-[11px] tracking-[0.15em] text-gold-500 transition hover:text-gold-300"
+            onClick={() => setAiSettingsOpen(true)}
+          >
+            ⚙ AI SETTINGS
+          </button>
+        </div>
 
         {/* 02 / JURY PANEL */}
         <section>
