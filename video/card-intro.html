@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1280px; height: 720px; overflow: hidden;
+    background: radial-gradient(ellipse at 50% 0%, #1c1710 0%, #0c0a07 55%, #060504 100%);
+    color: #f2ecdd;
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .glow { position: absolute; inset-x: 0; top: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, #d9a94e, transparent); }
+  .badge { font-size: 20px; letter-spacing: 0.5em; color: #d9a94e; margin-bottom: 28px; }
+  h1 { font-size: 64px; font-weight: 900; letter-spacing: 2px;
+    background: linear-gradient(180deg, #f5e3b3, #d9a94e);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .sub { font-size: 24px; color: #9a927e; margin-top: 18px; letter-spacing: 4px; }
+  .line { width: 520px; height: 1px; margin: 44px 0;
+    background: linear-gradient(90deg, transparent, #6b5a33, transparent); }
+  .agenda { display: flex; gap: 28px; }
+  .card { width: 380px; border: 1px solid #3a3120; border-radius: 14px; padding: 26px 30px;
+    background: rgba(217,169,78,0.05); }
+  .card b { display: block; font-size: 21px; color: #eccd8a; margin-bottom: 10px; }
+  .card span { font-size: 15px; color: #8d8571; line-height: 1.6; }
+  .foot { position: absolute; bottom: 34px; font-size: 14px; color: #565040; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="badge">MONAD BLITZ · 黑客松演示</div>
+  <h1>Agent Jury</h1>
+  <div class="sub">AI Agent 盲审共识陪审团 · 可插拔信任中间件</div>
+  <div class="line"></div>
+  <div class="agenda">
+    <div class="card">
+      <b>演示一 · 独立演示台</b>
+      <span>危险交易案例 → 4 名陪审员互不可见盲审 → 承诺哈希密封 → 揭晓校验 → 固定代码共识</span>
+    </div>
+    <div class="card">
+      <b>演示二 · 集成演示</b>
+      <span>Kuru Exchange 交易 Agent 签名前调用中间件风控审批 → 5 步集成管线 → 裁决回调拦截交易</span>
+    </div>
+  </div>
+  <div class="foot">全程约 2.5 分钟 · 在线演示可亲自体验：128840e2f4b341a58f39bff9bb57b6d4.app.workbuddy.link</div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1280px; height: 720px; overflow: hidden;
+    background: radial-gradient(ellipse at 50% 100%, #1c1710 0%, #0c0a07 55%, #060504 100%);
+    color: #f2ecdd;
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .glow { position: absolute; inset-x: 0; bottom: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, #d9a94e, transparent); }
+  h1 { font-size: 52px; font-weight: 900; letter-spacing: 3px;
+    background: linear-gradient(180deg, #f5e3b3, #d9a94e);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .sub { font-size: 22px; color: #9a927e; margin-top: 16px; letter-spacing: 2px; }
+  .line { width: 520px; height: 1px; margin: 40px 0;
+    background: linear-gradient(90deg, transparent, #6b5a33, transparent); }
+  .links { display: grid; grid-template-columns: auto auto; gap: 14px 40px;
+    font-size: 17px; color: #b7ae97; }
+  .links b { color: #eccd8a; font-weight: 600; margin-right: 12px; }
+  .links span { font-family: Consolas, monospace; font-size: 15px; }
+  .slogan { margin-top: 46px; font-size: 20px; color: #d9a94e; letter-spacing: 3px; }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <h1>裁决即信任原语</h1>
+  <div class="sub">盲审消灭从众 · 固定代码共识 · 裁决上链可组合可审计</div>
+  <div class="line"></div>
+  <div class="links">
+    <div><b>在线演示</b><span>128840e2f4b341a58f39bff9bb57b6d4.app.workbuddy.link</span></div>
+    <div><b>GitHub</b><span>github.com/StellaWang5209/Agent-Jury</span></div>
+    <div><b>智能合约</b><span>0x2986c8094771162F39AD991d6dc87490149BfeA9</span></div>
+    <div><b>网络</b><span>Monad Testnet（Chain ID 10143）</span></div>
+  </div>
+  <div class="slogan">Agent 的执行速度由 Monad 保证 · Agent 的决策可信由 Agent Jury 保证</div>
+</body>
+</html>

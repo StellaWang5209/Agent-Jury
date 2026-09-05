@@ -1,11 +1,14 @@
 # Agent Jury — AI Agent 盲审共识陪审团
 
+> **Monad Blitz@惠州 黑客松参赛项目**
 > 让每一个 AI 决策，都经得起陪审。
 > **一个不收费的信任中间件：任何 AI Agent 在执行不可逆操作之前，先过一场 4 视角盲审。**
 
 [![Live Demo](https://img.shields.io/badge/LIVE_DEMO-app.workbuddy.link-D9A94E)](https://128840e2f4b341a58f39bff9bb57b6d4.app.workbuddy.link)
 [![Monad Testnet](https://img.shields.io/badge/CONTRACT-0x2986...eA9-836EF1)](https://testnet.monadscan.com/address/0x2986c8094771162F39AD991d6dc87490149BfeA9)
 [![GitHub](https://img.shields.io/badge/README-%E5%AE%8C%E6%95%B4%E8%B7%AF%E6%BC%94-24292F)](#)
+
+> 🎬 **2 分 09 秒演示视频**：[`docs/AgentJury-Demo.mp4`](docs/AgentJury-Demo.mp4) —— 片头导览 → 独立演示台（危险案例盲审全流程）→ 集成演示（Kuru Exchange 风控回调拦截交易）→ 收尾。在线演示： <https://128840e2f4b341a58f39bff9bb57b6d4.app.workbuddy.link>
 
 ---
 
@@ -76,7 +79,7 @@ Agent 为什么做这个决定？LLM 的推理过程第三方无法复现、无�
 
 以 Monad 生态旗舰订单簿 DEX **Kuru** 为宿主的中间件集成形态：Kuru 交易 Agent 计划对未经验证的路由合约执行 Unlimited Approve 并以 500 USDC 买入 MON，**签名前**调用 `AgentJury.requestAudit()` 发起风控审批，经 5 步集成管线（发起审批 → 构建案件 → 4 陪审员盲审 → 揭晓共识 → 裁决回调）后放行 / 拦截 / 转人工。为展示中间件本身，盲审全流程（推理日志、承诺哈希、揭晓校验、上链锚定）在页面上全部可见；生产集成时宿主可选择只暴露 API。
 
-**这个集成场景为什么成立：**
+**这个集成场景为什么成立（不是硬凑）：**
 
 1. **订单簿 DEX 天然是 Agent 的主场**——做市、套利、网格策略本就由程序化 Agent 7×24 执行，"Agent 持密钥自主交易"是现状而非设想；
 2. **签名前的那一秒是唯一干预窗口**——Unlimited Approve 不可逆，事后无法追回，Agent Jury 恰好插在这一秒；
@@ -123,10 +126,10 @@ if (v === Verdict.BLOCK) revert BlockedByJury();
 
 | 指标 | Monad 主网（官网最新） | 以太坊主网 | 对 Agent Jury 的意义 |
 | --- | --- | --- | --- |
-| 吞吐量 | **10,000+ TPS**（设计容量） | ~15 TPS（基础主网） | 每案 8+ 笔上链交易，高频率也不拥堵 |
+| 吞吐量 | **10,000+ TPS**（设计容量） | ~15 TPS | 每案 8+ 笔上链交易，高频率也不拥堵 |
 | 出块时间 | **300ms**（主网实测 ~302ms） | 12s | 裁决实时落账，审批不拖慢 Agent 执行 |
-| 最终性 | **600ms**（MonadBFT 2 slot） | ~12 分钟 | 宿主拿到的是"已最终确认"的裁决，秒级放行 |
-| 交易费用 | **近零** | $0.01–0.50/笔 | 免费中间件的成本模型才能成立 |
+| 最终性 | **600ms**（MonadBFT 2 slot） | ~13 分钟 | 宿主拿到的是"已最终确认"的裁决，秒级放行 |
+| 交易费用 | **近零** | $1–50/笔 | 免费中间件的成本模型才能成立 |
 | 兼容性 | **全 EVM 字节码级** | — | 宿主零改造接入，Solidity 合约直接可读裁决 |
 | 去中心化 | ~200 个独立验证者 · 30+ 国家 · 消费级硬件 | — | 裁决锚定在可信中立的结算层，非单一运营方 |
 
@@ -196,7 +199,8 @@ cd ../contracts && npm install && npx hardhat test
 - **V3**：仲裁 API / SDK 正式发布，供宿主项目 3 行代码接入
 - **V4**：去中心化仲裁市场 + 陪审员信誉体系
 
-## 其他信息
+## 参赛信息
 
+- **比赛**：Monad Blitz@惠州（2026）
 - **演示**：https://128840e2f4b341a58f39bff9bb57b6d4.app.workbuddy.link
 - **合约**：0x2986c8094771162F39AD991d6dc87490149BfeA9（Monad Testnet）
