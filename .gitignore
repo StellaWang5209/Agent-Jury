@@ -1,0 +1,25 @@
+# 依赖
+node_modules/
+
+# 环境变量与密钥 —— 绝对不要提交到 git！
+.env
+.env.local
+frontend/.env
+contracts/.env
+
+# 构建产物
+frontend/dist/
+contracts/cache/
+contracts/artifacts/
+contracts/typechain-types/
+contracts/coverage/
+contracts/coverage.json
+
+# 编辑器与系统文件
+.vscode/
+.DS_Store
+Thumbs.db
+
+# 部署用构建产物
+site-dist/
+screenshots/.edgeprofile/
